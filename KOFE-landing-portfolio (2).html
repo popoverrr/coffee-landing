@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KӨFE — Specialty Coffee Almaty</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0C0A09;
+    --cream: #F5F0E8;
+    --gold: #C8A96E;
+    --gold-light: #E8D5A8;
+    --brown: #3D2B1F;
+    --text: #F5F0E8;
+    --text-muted: #A39888;
+    --accent: #D4763C;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+    cursor: default;
+  }
+
+  ::selection {
+    background: var(--gold);
+    color: var(--bg);
+  }
+
+  /* ═══════ NOISE TEXTURE ═══════ */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ═══════ NAV ═══════ */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 24px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    backdrop-filter: blur(20px);
+    background: rgba(12,10,9,0.6);
+    border-bottom: 1px solid rgba(200,169,110,0.1);
+  }
+
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 900;
+    letter-spacing: 6px;
+    color: var(--gold);
+    text-decoration: none;
+  }
+
+  .logo span { color: var(--accent); }
+
+  .nav-links {
+    display: flex;
+    gap: 36px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 500;
+    transition: color 0.3s;
+    position: relative;
+  }
+
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--gold);
+    transition: width 0.3s;
+  }
+
+  .nav-links a:hover { color: var(--gold); }
+  .nav-links a:hover::after { width: 100%; }
+
+  /* ═══════ HERO ═══════ */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding: 120px 48px 80px;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 70% 50%, rgba(61,43,31,0.5) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 60% at 20% 80%, rgba(212,118,60,0.12) 0%, transparent 60%);
+  }
+
+  .hero-line {
+    position: absolute;
+    right: 42%;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, rgba(200,169,110,0.2), transparent);
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 680px;
+  }
+
+  .hero-tag {
+    font-size: 12px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.3s forwards;
+  }
+
+  .hero-tag::before {
+    content: '';
+    width: 40px;
+    height: 1px;
+    background: var(--gold);
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(48px, 7vw, 96px);
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.5s forwards;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--gold);
+  }
+
+  .hero-desc {
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--text-muted);
+    max-width: 440px;
+    margin-bottom: 48px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.7s forwards;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 20px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.9s forwards;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 36px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 700;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .btn-primary {
+    background: var(--gold);
+    color: var(--bg);
+  }
+
+  .btn-primary:hover {
+    background: var(--gold-light);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(200,169,110,0.25);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--cream);
+    border: 1px solid rgba(245,240,232,0.2);
+  }
+
+  .btn-ghost:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  /* ═══════ HERO VISUAL ═══════ */
+  .hero-visual {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 45%;
+    height: 75vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    animation: fadeIn 1.2s 0.6s forwards;
+  }
+
+  .coffee-cup {
+    width: 320px;
+    height: 320px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 40% 35%, #6B4226, #3D2B1F 60%, #1a0f08 100%);
+    box-shadow:
+      0 0 80px rgba(200,169,110,0.15),
+      0 0 160px rgba(61,43,31,0.3),
+      inset 0 -20px 60px rgba(0,0,0,0.5),
+      inset 0 10px 30px rgba(200,169,110,0.1);
+    position: relative;
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .coffee-cup::before {
+    content: '';
+    position: absolute;
+    top: 15%;
+    left: 15%;
+    width: 70%;
+    height: 70%;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%,
+      rgba(200,169,110,0.3),
+      rgba(107,66,38,0.5) 40%,
+      rgba(61,43,31,0.8) 70%
+    );
+    animation: swirl 8s ease-in-out infinite;
+  }
+
+  .coffee-cup::after {
+    content: '';
+    position: absolute;
+    top: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 50px;
+    background: linear-gradient(to top, rgba(200,169,110,0.2), transparent);
+    animation: steam 3s ease-in-out infinite;
+  }
+
+  .cup-ring {
+    position: absolute;
+    inset: -20px;
+    border-radius: 50%;
+    border: 1px solid rgba(200,169,110,0.08);
+    animation: pulse-ring 4s ease-in-out infinite;
+  }
+
+  .cup-ring:nth-child(2) {
+    inset: -50px;
+    animation-delay: 1s;
+  }
+
+  .cup-ring:nth-child(3) {
+    inset: -80px;
+    animation-delay: 2s;
+  }
+
+  /* ═══════ STATS BAR ═══════ */
+  .stats {
+    padding: 0 48px 80px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .stats-inner {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: rgba(200,169,110,0.1);
+    border: 1px solid rgba(200,169,110,0.1);
+  }
+
+  .stat {
+    padding: 40px;
+    background: var(--bg);
+    text-align: center;
+    transition: background 0.3s;
+  }
+
+  .stat:hover { background: rgba(200,169,110,0.03); }
+
+  .stat-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 42px;
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  /* ═══════ SECTION ABOUT ═══════ */
+  .about {
+    padding: 120px 48px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+    position: relative;
+  }
+
+  .section-tag {
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-tag::before {
+    content: '';
+    width: 30px;
+    height: 1px;
+    background: var(--gold);
+  }
+
+  .about h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(36px, 4vw, 56px);
+    line-height: 1.15;
+    margin-bottom: 28px;
+  }
+
+  .about h2 em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--gold);
+  }
+
+  .about p {
+    color: var(--text-muted);
+    line-height: 1.8;
+    font-size: 16px;
+    margin-bottom: 16px;
+  }
+
+  .about-visual {
+    position: relative;
+    height: 500px;
+  }
+
+  .about-card {
+    position: absolute;
+    background: linear-gradient(135deg, rgba(200,169,110,0.08), rgba(200,169,110,0.02));
+    border: 1px solid rgba(200,169,110,0.12);
+    backdrop-filter: blur(10px);
+    padding: 32px;
+    transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .about-card:hover { transform: translateY(-8px); }
+
+  .about-card:nth-child(1) {
+    top: 0;
+    left: 0;
+    width: 280px;
+  }
+
+  .about-card:nth-child(2) {
+    top: 140px;
+    right: 0;
+    width: 260px;
+  }
+
+  .about-card:nth-child(3) {
+    bottom: 0;
+    left: 60px;
+    width: 300px;
+  }
+
+  .card-icon {
+    width: 48px;
+    height: 48px;
+    border: 1px solid var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    font-size: 20px;
+  }
+
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+
+  .card-text {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  /* ═══════ MENU SECTION ═══════ */
+  .menu {
+    padding: 120px 48px;
+    text-align: center;
+  }
+
+  .menu h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(36px, 4vw, 56px);
+    margin-bottom: 16px;
+  }
+
+  .menu h2 em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--gold);
+  }
+
+  .menu-subtitle {
+    color: var(--text-muted);
+    margin-bottom: 64px;
+    font-size: 16px;
+  }
+
+  .menu-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .menu-item {
+    padding: 48px 36px;
+    background: rgba(200,169,110,0.03);
+    border: 1px solid rgba(200,169,110,0.06);
+    text-align: left;
+    transition: all 0.4s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .menu-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--gold);
+    transition: width 0.4s;
+  }
+
+  .menu-item:hover::before { width: 100%; }
+  .menu-item:hover { background: rgba(200,169,110,0.06); }
+
+  .menu-item-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    margin-bottom: 8px;
+  }
+
+  .menu-item-origin {
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+  }
+
+  .menu-item-desc {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+
+  .menu-item-price {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    color: var(--gold);
+  }
+
+  .menu-item-price span {
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text-muted);
+  }
+
+  /* ═══════ CTA SECTION ═══════ */
+  .cta-section {
+    padding: 120px 48px;
+    text-align: center;
+    position: relative;
+  }
+
+  .cta-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 50% 50% at 50% 50%, rgba(200,169,110,0.06) 0%, transparent 70%);
+  }
+
+  .cta-section h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(36px, 5vw, 64px);
+    line-height: 1.15;
+    margin-bottom: 24px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .cta-section h2 em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--gold);
+  }
+
+  .cta-section p {
+    color: var(--text-muted);
+    font-size: 17px;
+    max-width: 500px;
+    margin: 0 auto 48px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .cta-section .btn {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* ═══════ FOOTER ═══════ */
+  footer {
+    padding: 48px;
+    border-top: 1px solid rgba(200,169,110,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-copy {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 28px;
+    list-style: none;
+  }
+
+  .footer-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 13px;
+    transition: color 0.3s;
+  }
+
+  .footer-links a:hover { color: var(--gold); }
+
+  /* ═══════ ANIMATIONS ═══════ */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+  }
+
+  @keyframes swirl {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(15deg); }
+  }
+
+  @keyframes steam {
+    0%, 100% { opacity: 0; height: 30px; }
+    50% { opacity: 0.5; height: 50px; }
+  }
+
+  @keyframes pulse-ring {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 0.1; transform: scale(1.05); }
+  }
+
+  /* ═══════ RESPONSIVE ═══════ */
+  @media (max-width: 1024px) {
+    .hero-visual { display: none; }
+    .hero-content { max-width: 100%; }
+    .about { grid-template-columns: 1fr; }
+    .about-visual { height: 400px; }
+    .menu-grid { grid-template-columns: 1fr 1fr; }
+    .stats-inner { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 640px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    .hero { padding: 100px 24px 60px; }
+    .about { padding: 80px 24px; gap: 40px; }
+    .menu { padding: 80px 24px; }
+    .menu-grid { grid-template-columns: 1fr; }
+    .stats-inner { grid-template-columns: 1fr 1fr; }
+    .stat { padding: 24px; }
+    .cta-section { padding: 80px 24px; }
+    footer { flex-direction: column; gap: 20px; padding: 32px 24px; }
+    .hero-cta { flex-direction: column; }
+    .btn { justify-content: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo">KӨ<span>FE</span></a>
+  <ul class="nav-links">
+    <li><a href="#about">О нас</a></li>
+    <li><a href="#menu">Меню</a></li>
+    <li><a href="#contact">Контакты</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-line"></div>
+
+  <div class="hero-content">
+    <div class="hero-tag">Specialty Coffee Almaty</div>
+    <h1>Кофе как<br><em>искусство</em></h1>
+    <p class="hero-desc">
+      Обжарка каждую неделю. Зёрна из Эфиопии, Колумбии и Кении.
+      Место, где каждая чашка — это путешествие.
+    </p>
+    <div class="hero-cta">
+      <a href="#menu" class="btn btn-primary">Наше меню →</a>
+      <a href="#contact" class="btn btn-ghost">Забронировать</a>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <div class="coffee-cup">
+      <div class="cup-ring"></div>
+      <div class="cup-ring"></div>
+      <div class="cup-ring"></div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="stats">
+  <div class="stats-inner">
+    <div class="stat">
+      <div class="stat-number">12</div>
+      <div class="stat-label">Сортов в ротации</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number">3</div>
+      <div class="stat-label">Года в Алматы</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number">48K</div>
+      <div class="stat-label">Чашек в год</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number">4.9</div>
+      <div class="stat-label">Рейтинг Google</div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div>
+    <div class="section-tag">Наша философия</div>
+    <h2>Зерно до<br><em>чашки</em></h2>
+    <p>
+      Мы работаем напрямую с фермерами. Каждая партия зелёного зерна
+      проходит через каппинг, прежде чем попасть к вам. Обжарка —
+      еженедельно, на собственном ростере.
+    </p>
+    <p>
+      Наш бариста — не просто человек за стойкой. Это гид, который
+      поможет подобрать именно ваш вкус, будь то яркая кислотность
+      кенийского SL-28 или шоколадная плотность бразильского натурала.
+    </p>
+  </div>
+
+  <div class="about-visual">
+    <div class="about-card">
+      <div class="card-icon">☕</div>
+      <div class="card-title">Свежая обжарка</div>
+      <div class="card-text">Каждую пятницу — новая партия. Всегда от 3 до 14 дней после обжарки.</div>
+    </div>
+    <div class="about-card">
+      <div class="card-icon">🌱</div>
+      <div class="card-title">Direct Trade</div>
+      <div class="card-text">Прямые контракты с фермами. Прозрачность цепочки от дерева до чашки.</div>
+    </div>
+    <div class="about-card">
+      <div class="card-icon">✦</div>
+      <div class="card-title">Обучение</div>
+      <div class="card-text">Мастер-классы по каппингу и альтернативным способам заваривания каждую субботу.</div>
+    </div>
+  </div>
+</section>
+
+<!-- MENU -->
+<section class="menu" id="menu">
+  <div class="section-tag" style="justify-content: center;">Выбор сезона</div>
+  <h2>Наше <em>меню</em></h2>
+  <p class="menu-subtitle">Ротация обновляется каждую неделю</p>
+
+  <div class="menu-grid">
+    <div class="menu-item">
+      <div class="menu-item-name">Ethiopia Yirgacheffe</div>
+      <div class="menu-item-origin">Эфиопия · Мытая</div>
+      <div class="menu-item-desc">Жасмин, бергамот, персик. Лёгкое тело с чайной текстурой.</div>
+      <div class="menu-item-price">1 200 ₸ <span>/ V60</span></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="menu-item-name">Colombia Huila</div>
+      <div class="menu-item-origin">Колумбия · Натуральная</div>
+      <div class="menu-item-desc">Карамель, красное яблоко, молочный шоколад. Плотность и сладость.</div>
+      <div class="menu-item-price">1 400 ₸ <span>/ Aeropress</span></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="menu-item-name">Kenya AA Nyeri</div>
+      <div class="menu-item-origin">Кения · Мытая</div>
+      <div class="menu-item-desc">Чёрная смородина, томат, лайм. Яркая кислотность и долгий финиш.</div>
+      <div class="menu-item-price">1 600 ₸ <span>/ Chemex</span></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="menu-item-name">Flat White</div>
+      <div class="menu-item-origin">Классика</div>
+      <div class="menu-item-desc">Двойной эспрессо, бархатная текстура молока. Идеальный баланс.</div>
+      <div class="menu-item-price">950 ₸ <span>/ 180 мл</span></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="menu-item-name">Batch Brew</div>
+      <div class="menu-item-origin">Фильтр дня</div>
+      <div class="menu-item-desc">Большая чашка фильтрованного кофе. Сорт меняется ежедневно.</div>
+      <div class="menu-item-price">700 ₸ <span>/ 300 мл</span></div>
+    </div>
+
+    <div class="menu-item">
+      <div class="menu-item-name">Маття Латте</div>
+      <div class="menu-item-origin">Не кофе</div>
+      <div class="menu-item-desc">Церемониальная маття из Удзи. Овсяное молоко. Без сахара.</div>
+      <div class="menu-item-price">1 300 ₸ <span>/ 250 мл</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="contact">
+  <h2>Заглядывайте<br>на <em>чашку</em></h2>
+  <p>Алматы, ул. Панфилова 88. Каждый день с 8:00 до 22:00. Бронь столика — в один клик.</p>
+  <a href="#" class="btn btn-primary">Забронировать столик →</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-copy">© 2026 KӨFE. Specialty Coffee Almaty.</span>
+  <ul class="footer-links">
+    <li><a href="#">Instagram</a></li>
+    <li><a href="#">Telegram</a></li>
+    <li><a href="#">2GIS</a></li>
+  </ul>
+</footer>
+
+</body>
+</html>
